@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Akıllı Gardırop Danışmanı</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg-color: #f0f4f8;
+            --card-bg: #ffffff;
+            --text-color: #2c3e50;
+            --primary-color: #4a90e2;
+            --accent-color: #6c5ce7;
+            --pop-color: #ff7675;
+            --border-radius: 20px;
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: var(--card-bg);
+            padding: 40px;
+            border-radius: var(--border-radius);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 720px;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255,255,255,0.4);
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 28px;
+            font-weight: 700;
+            background: linear-gradient(45deg, #4a90e2, #6c5ce7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            text-align: center;
+            color: #34495e;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .weather-options {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-bottom: 35px;
+        }
+
+        .weather-btn {
+            background: #f8fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 15px;
+            padding: 15px 5px;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .weather-btn i { font-size: 26px; }
+        .weather-btn span { font-size: 16px; font-weight: 600; }
+
+        .weather-btn[data-weather="sıcak"] i { color: #ff7675; }
+        .weather-btn[data-weather="ılık"] i { color: #fdcb6e; }
+        .weather-btn[data-weather="yağmurlu"] i { color: #9c88ff; }
+        .weather-btn[data-weather="soğuk"] i { color: #74b9ff; }
+
+        .weather-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+
+        .weather-btn.active[data-weather="sıcak"] { background: #ffeaa7; border-color: #e17055; }
+        .weather-btn.active[data-weather="ılık"] { background: #ffeaa7; border-color: #fdcb6e; }
+        .weather-btn.active[data-weather="yağmurlu"] { background: #e0d0ff; border-color: #9c88ff; }
+        .weather-btn.active[data-weather="soğuk"] { background: #dfe6e9; border-color: #0984e3; }
+
+        .clothes-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .selection-group {
+            background: #f8fafc;
+            padding: 15px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .selection-group.full-width {
+            grid-column: span 2;
+        }
+
+        /* Pop Modu Switch Alanı Tasarımı */
+        .pop-switch-container {
+            grid-column: span 2;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: linear-gradient(135deg, #ffeaa7 0%, #ff7675 100%);
+            padding: 15px 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            color: #2c3e50;
+            box-shadow: 0 4px 10px rgba(255, 118, 117, 0.2);
+        }
+
+        .pop-title {
+            font-weight: 600;
+            font-size: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 26px;
+        }
+
+        .switch input { 
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: var(--accent-color);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(24px);
+        }
+
+        .label-text {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: block;
+            color: #475569;
+        }
+
+        .custom-select {
+            width: 100%;
+            padding: 12px;
+            border-radius: 10px;
+            border: 2px solid #e2e8f0;
+            background-color: white;
+            font-size: 14px;
+            color: var(--text-color);
+            outline: none;
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+        .custom-select:focus {
+            border-color: var(--primary-color);
+        }
+
+        .submit-btn {
+            width: 100%;
+            background: linear-gradient(45deg, #4a90e2, #6c5ce7);
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: 0 4px 15px rgba(108, 92, 231, 0.3);
+            margin-top: 10px;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(108, 92, 231, 0.4);
+        }
+
+        .result-box {
+            margin-top: 30px;
+            padding: 25px;
+            border-radius: 15px;
+            background: #f1f2f6;
+            border-left: 5px solid var(--accent-color);
+            display: none;
+            max-height: 400px;
+            overflow-y: auto;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .result-title {
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: #2c3e50;
+            font-size: 16px;
+        }
+        
+        .kombin-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            font-size: 13px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .kombin-table th, .kombin-table td {
+            padding: 10px 12px;
+            text-align: left;
+            border-bottom: 1px solid #edf2f7;
+        }
+
+        .kombin-table th {
+            background-color: #f8fafc;
+            color: #4a5568;
+            font-weight: 600;
+        }
+
+        .kombin-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .kombin-table tr:hover {
+            background-color: #f7fafc;
+        }
+
+        .badge-count {
+            background: var(--accent-color);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 20px;
+            font-size: 12px;
+            margin-left: 5px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1><i class="fa-solid fa-shirt"></i> Akıllı Gardırop</h1>
+        
+        <div class="section-title">
+            <i class="fa-solid fa-cloud-sun"></i> Bugün hava nasıl?
+        </div>
+        
+        <div class="weather-options">
+            <button class="weather-btn" data-weather="sıcak" onclick="selectWeather('sıcak')">
+                <i class="fa-solid fa-temperature-high"></i>
+                <span>Sıcak</span>
+            </button>
+            <button class="weather-btn" data-weather="ılık" onclick="selectWeather('ılık')">
+                <i class="fa-solid fa-cloud-sun"></i>
+                <span>Ilık</span>
+            </button>
+            <button class="weather-btn" data-weather="yağmurlu" onclick="selectWeather('yağmurlu')">
+                <i class="fa-solid fa-cloud-showers-heavy"></i>
+                <span>Yağmurlu</span>
+            </button>
+            <button class="weather-btn" data-weather="soğuk" onclick="selectWeather('soğuk')">
+                <i class="fa-solid fa-snowflake"></i>
+                <span>Soğuk</span>
+            </button>
+        </div>
+
+        <div class="pop-switch-container">
+            <div class="pop-title">
+                <i class="fa-solid fa-wand-magic-sparkles"></i>
+                <span>Pop Renk Modunu Aç (Cesur Kontrastlar)</span>
+            </div>
+            <label class="switch">
+                <input type="checkbox" id="popModuCheck">
+                <span class="slider"></span>
+            </label>
+        </div>
+
+        <div class="section-title">
+            <i class="fa-solid fa-user-tie"></i> Üst Giyim Tercihleri
+        </div>
+        <div class="clothes-grid">
+            <div class="selection-group">
+                <label class="label-text">Ne Giyeceksin?</label>
+                <select id="ustTur" class="custom-select">
+                    <option value="bilmiyor">Önce hava durumu seçin...</option>
+                </select>
+            </div>
+            <div class="selection-group">
+                <label class="label-text">Hangi Renk?</label>
+                <select id="ustRenk" class="custom-select">
+                    <option value="bilmiyor">- (Fark etmez / Bilmiyorum)</option>
+                    <option value="siyah">Siyah</option>
+                    <option value="beyaz">Beyaz</option>
+                    <option value="gri">Gri</option>
+                    <option value="lacivert">Lacivert</option>
+                    <option value="mavi">Mavi</option>
+                    <option value="kırmızı">Kırmızı</option>
+                    <option value="bordo">Bordo</option>
+                    <option value="yeşil">Yeşil</option>
+                    <option value="bej">Bej</option>
+                    <option value="kahverengi">Kahverengi</option>
+                    <option value="mor">Mor</option>
+                    <option value="turuncu">Turuncu</option>
+                    <option value="pembe">Pembe</option>
+                    <option value="sarı">Sarı</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="section-title">
+            <i class="fa-solid fa-socks"></i> Alt Giyim Tercihleri
+        </div>
+        <div class="clothes-grid">
+            <div class="selection-group">
+                <label class="label-text">Ne Giyeceksin?</label>
+                <select id="altTur" class="custom-select">
+                    <option value="bilmiyor">Önce hava durumu seçin...</option>
+                </select>
+            </div>
+            <div class="selection-group">
+                <label class="label-text">Hangi Renk?</label>
+                <select id="altRenk" class="custom-select">
+                    <option value="bilmiyor">- (Fark etmez / Bilmiyorum)</option>
+                    <option value="siyah">Siyah</option>
+                    <option value="beyaz">Beyaz</option>
+                    <option value="gri">Gri</option>
+                    <option value="lacivert">Lacivert</option>
+                    <option value="mavi">Mavi</option>
+                    <option value="kırmızı">Kırmızı</option>
+                    <option value="bordo">Bordo</option>
+                    <option value="yeşil">Yeşil</option>
+                    <option value="bej">Bej</option>
+                    <option value="kahverengi">Kahverengi</option>
+                    <option value="mor">Mor</option>
+                    <option value="turuncu">Turuncu</option>
+                    <option value="pembe">Pembe</option>
+                    <option value="sarı">Sarı</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="section-title">
+            <i class="fa-solid fa-shoe-prints"></i> Ayakkabı Tercihi
+        </div>
+        <div class="clothes-grid">
+            <div class="selection-group full-width">
+                <label class="label-text">Ne Tür Ayakkabı Giyeceksin?</label>
+                <select id="ayakkabiTur" class="custom-select">
+                    <option value="bilmiyor">Önce hava durumu seçin...</option>
+                </select>
+            </div>
+        </div>
+
+        <button class="submit-btn" onclick="kombinOner()">Tüm Olası Kombinleri Bul</button>
+
+        <div id="resultBox" class="result-box">
+            <div class="result-title">
+                <i class="fa-solid fa-wand-magic-sparkles"></i> 
+                Uyan Olasılıklar <span id="matchCount" class="badge-count">0</span>
+            </div>
+            <div id="resultText"></div>
+        </div>
+    </div>
+
+    <script>
+        let secilenHava = '';
+
+        const havaKuralları = {
+            'sıcak': {
+                ustler: ['tshirt', 'gömlek', 'bluz', 'askılı'],
+                altlar: ['etek', 'şort', 'pantolon'],
+                dislar: ['yok', 'ceket'],
+                ayakkabilar: ['spor', 'sandalet', 'terlik']
+            },
+            'ılık': {
+                ustler: ['tshirt', 'gömlek', 'bluz', 'askılı'],
+                altlar: ['etek', 'şort', 'pantolon'],
+                dislar: ['hırka', 'ceket'],
+                ayakkabilar: ['sandalet', 'spor']
+            },
+            'yağmurlu': {
+                ustler: ['tshirt', 'gömlek', 'hoodie', 'sweatshirt', 'kazak'],
+                altlar: ['tayt', 'jeans', 'pantolon', 'etek'],
+                dislar: ['mont', 'ceket', 'kaban'],
+                ayakkabilar: ['bot', 'çizme']
+            },
+            'soğuk': {
+                ustler: ['kazak', 'hoodie', 'sweatshirt', 'gömlek', 'tshirt'],
+                altlar: ['jeans', 'pantolon', 'tayt'],
+                dislar: ['mont', 'kaban'],
+                ayakkabilar: ['spor', 'bot']
+            }
+        };
+
+        const uyumluRenkler = {
+            siyah: ['beyaz', 'gri', 'kırmızı', 'bordo', 'mavi', 'lacivert', 'bej', 'mor', 'turuncu', 'yeşil'],
+            beyaz: ['siyah', 'gri', 'lacivert', 'mavi', 'kırmızı', 'bordo', 'yeşil', 'bej', 'kahverengi', 'mor', 'turuncu'],
+            gri: ['siyah', 'beyaz', 'lacivert', 'mavi', 'bordo', 'mor', 'bej'],
+            lacivert: ['beyaz', 'gri', 'bej', 'kırmızı', 'turuncu', 'kahverengi'],
+            mavi: ['beyaz', 'gri', 'siyah', 'bej', 'kahverengi', 'turuncu'],
+            kırmızı: ['siyah', 'beyaz', 'gri', 'lacivert', 'bej'],
+            bordo: ['siyah', 'beyaz', 'gri', 'bej', 'kahverengi', 'lacivert'],
+            yeşil: ['siyah', 'beyaz', 'bej', 'kahverengi'],
+            bej: ['siyah', 'beyaz', 'lacivert', 'bordo', 'kahverengi', 'yeşil', 'mor'],
+            kahverengi: ['beyaz', 'bej', 'lacivert', 'bordo', 'yeşil', 'turuncu'],
+            mor: ['siyah', 'beyaz', 'gri', 'bej', 'lacivert'],
+            turuncu: ['siyah', 'lacivert', 'mavi', 'kahverengi', 'beyaz'],
+            pembe: ['beyaz', 'gri', 'siyah', 'lacivert'],
+            sarı: ['siyah', 'beyaz', 'lacivert', 'gri']
+        };
+
+        // Birebir kombin.pl dosyasındaki pop_renk(AltRenk, ÜstRenk) ilişkileri
+        const popRenkler = {
+            turuncu: ['siyah', 'lacivert'],
+            yeşil: ['pembe', 'mor'],
+            kırmızı: ['siyah', 'white'], // 'white' ifadesini 'beyaz' olarak düzeltiyoruz
+            kırmızı: ['siyah', 'beyaz'],
+            mor: ['sarı', 'turuncu'],
+            mavi: ['turuncu', 'bordo'],
+            bej: ['bordo', 'yeşil'],
+            siyah: ['kırmızı', 'turuncu'],
+            beyaz: ['mor', 'kırmızı'],
+            gri: ['mor', 'turuncu'],
+            kahverengi: ['turuncu'],
+            bordo: ['sarı'],
+            lacivert: ['turuncu', 'sarı'],
+            pembe: ['yeşil', 'lacivert', 'siyah'],
+            sarı: ['lacivert', 'mor', 'bordo', 'siyah']
+        };
+
+        const tumRenkListesi = Object.keys(uyumluRenkler);
+
+        function selectWeather(weather) {
+            document.querySelectorAll('.weather-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            const activeBtn = document.querySelector(`.weather-btn[data-weather="${weather}"]`);
+            if(activeBtn) activeBtn.classList.add('active');
+            
+            secilenHava = weather;
+            updateDropdowns(weather);
+        }
+
+        function updateDropdowns(weather) {
+            const kurallar = havaKuralları[weather];
+            const ustSelect = document.getElementById('ustTur');
+            const altSelect = document.getElementById('altTur');
+            const ayakkabiSelect = document.getElementById('ayakkabiTur');
+
+            ustSelect.innerHTML = '<option value="bilmiyor">- (Hepsini Getir / Fark Etmez)</option>';
+            kurallar.ustler.forEach(item => {
+                ustSelect.innerHTML += `<option value="${item}">${item.toUpperCase()}</option>`;
+            });
+
+            altSelect.innerHTML = '<option value="bilmiyor">- (Hepsini Getir / Fark Etmez)</option>';
+            kurallar.altlar.forEach(item => {
+                altSelect.innerHTML += `<option value="${item}">${item.toUpperCase()}</option>`;
+            });
+
+            ayakkabiSelect.innerHTML = '<option value="bilmiyor">- (Hepsini Getir / Fark Etmez)</option>';
+            kurallar.ayakkabilar.forEach(item => {
+                ayakkabiSelect.innerHTML += `<option value="${item}">${item.toUpperCase()}</option>`;
+            });
+        }
+
+        // Renk Uyumu Moduna göre kontrol fonksiyonu
+        function checkRenkUyum(altR, ustR, popModu) {
+            if (!altR || !ustR) return false;
+            
+            if (popModu) {
+                // kombin_pop kuralı: pop_renk(AltRenk, ÜstRenk)
+                return popRenkler[altR] && popRenkler[altR].includes(ustR);
+            } else {
+                // Standart uyumlu_renk_sim kuralı
+                return (uyumluRenkler[altR] && uyumluRenkler[altR].includes(ustR)) || 
+                       (uyumluRenkler[ustR] && uyumluRenkler[ustR].includes(altR));
+            }
+        }
+
+        function kombinOner() {
+            if (!secilenHava) {
+                alert("Lütfen önce bugünün hava durumunu seçin!");
+                return;
+            }
+
+            const reqUstTur = document.getElementById('ustTur').value;
+            const reqUstRenk = document.getElementById('ustRenk').value;
+            const reqAltTur = document.getElementById('altTur').value;
+            const reqAltRenk = document.getElementById('altRenk').value;
+            const reqAyakkabiTur = document.getElementById('ayakkabiTur').value;
+            
+            // Pop modu açık mı kapalı mı kontrolü
+            const popModuAktif = document.getElementById('popModuCheck').checked;
+
+            const kurallar = havaKuralları[secilenHava];
+
+            const hedefUstler = reqUstTur === 'bilmiyor' ? kurallar.ustler : [reqUstTur];
+            const hedefAltlar = reqAltTur === 'bilmiyor' ? kurallar.altlar : [reqAltTur];
+            const hedefUstRenkler = reqUstRenk === 'bilmiyor' ? tumRenkListesi : [reqUstRenk];
+            const hedefAltRenkler = reqAltRenk === 'bilmiyor' ? tumRenkListesi : [reqAltRenk];
+            const hedefAyakkabilar = reqAyakkabiTur === 'bilmiyor' ? kurallar.ayakkabilar : [reqAyakkabiTur];
+
+            let gecerliKombinler = [];
+
+            hedefUstler.forEach(ust => {
+                hedefAltlar.forEach(alt => {
+                    hedefUstRenkler.forEach(ustR => {
+                        hedefAltRenkler.forEach(altR => {
+                            // Renk uyumunu pop durumuna göre kontrol ediyoruz
+                            if (checkRenkUyum(altR, ustR, popModuAktif)) {
+                                kurallar.dislar.forEach(dis => {
+                                    hedefAyakkabilar.forEach(ayakkabi => {
+                                        gecerliKombinler.push({
+                                            ust: `${ustR} ${ust}`,
+                                            alt: `${altR} ${alt}`,
+                                            dis: dis === 'yok' ? 'Gerek yok' : dis,
+                                            ayakkabi: ayakkabi
+                                        });
+                                    });
+                                });
+                            }
+                        });
+                    });
+                });
+            });
+
+            const resultBox = document.getElementById('resultBox');
+            const resultText = document.getElementById('resultText');
+            const matchCount = document.getElementById('matchCount');
+
+            matchCount.innerText = gecerliKombinler.length;
+
+            if (gecerliKombinler.length === 0) {
+                resultText.innerHTML = `<p style='color:#e74c3c; font-weight:500;'>${popModuAktif ? 'Pop renk kurallarına' : 'Klasik renk kurallarına'} ve kriterlerine uyan hiçbir kombin bulunamadı.</p>`;
+            } else {
+                let tabloHTML = `
+                    <table class="kombin-table">
+                        <thead>
+                            <tr>
+                                <th>Üst Giyim (Renk + Tür)</th>
+                                <th>Alt Giyim (Renk + Tür)</th>
+                                <th>Dış Giyim</th>
+                                <th>Ayakkabı</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+
+                gecerliKombinler.forEach(kombin => {
+                    tabloHTML += `
+                        <tr>
+                            <td style="text-transform: capitalize;">${kombin.ust}</td>
+                            <td style="text-transform: capitalize;">${kombin.alt}</td>
+                            <td style="text-transform: capitalize;">${kombin.dis}</td>
+                            <td style="text-transform: capitalize;">${kombin.ayakkabi}</td>
+                        </tr>
+                    `;
+                });
+
+                tabloHTML += `</tbody></table>`;
+                resultText.innerHTML = tabloHTML;
+            }
+
+            resultBox.style.display = 'block';
+        }
+    </script>
+</body>
+</html>
