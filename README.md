@@ -14,3 +14,5 @@ This repository contains all the components of the Smart Wardrobe project, inclu
 **`kombin.html`**: The interactive frontend interface. If you want to run and test the application directly in your **web browser**, just open this file. It features a modern, responsive mesh-gradient design.
 
 **`app-release.apk`**: The mobile build. If you want to experience it as a native **Android application** on your phone, you can download and install this APK file directly onto your device.
+
+*Feel free to explore the code or install the APK to find your perfect daily outfit!*
